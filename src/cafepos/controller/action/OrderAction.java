@@ -54,6 +54,6 @@ public class OrderAction implements MainAction{
         }
 
         ctx.outputView().printAddCart();
-        ctx.logService().logOrder(selectedMenu, qty);
+        ctx.asyncTaskManager().execute(() -> ctx.logService().logOrder(selectedMenu, qty));
     }
 }

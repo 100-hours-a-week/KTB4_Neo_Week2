@@ -27,8 +27,8 @@ public class PayAction implements MainAction {
         if (paid) {
             List<OrderItem> paidItems = new ArrayList<>(ctx.cart().getItems());
             ctx.outputView().printPaymentCompleted();
-            ctx.receiptService().createReceipt(paidItems, totalPrice);
-            ctx.logService().logPayment(totalPrice);
+            ctx.asyncTaskManager().execute(() -> ctx.receiptService().createReceipt(paidItems, totalPrice));
+            ctx.asyncTaskManager().execute(() -> ctx.logService().logPayment(totalPrice));
             ctx.cart().clear();
         }
         else {

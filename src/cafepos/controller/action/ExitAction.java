@@ -10,7 +10,8 @@ public class ExitAction implements MainAction{
     @Override
     public void action() {
         ctx.outputView().printExit();
-        ctx.logService().logExit();
+        ctx.asyncTaskManager().execute(() -> ctx.logService().logExit());
+        ctx.asyncTaskManager().shutdown();
         ctx.stop();
     }
 

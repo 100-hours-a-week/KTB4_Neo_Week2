@@ -55,6 +55,7 @@ public class ContentBuilder implements ReceiptBuilder {
         sb.append(ReceiptText.THIN_LINE).append('\n');
         appendField(sb, ReceiptText.LABEL_TOTAL, totalPrice + ReceiptText.CURRENCY);
         sb.append(ReceiptText.THICK_LINE).append('\n');
+        appendField(sb, ReceiptText.LABEL_THREAD, Thread.currentThread().getName());
     }
 
     private void appendField(StringBuilder sb, String label, String value) {

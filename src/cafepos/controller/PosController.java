@@ -2,6 +2,7 @@ package cafepos.controller;
 
 import cafepos.controller.action.*;
 
+import cafepos.model.infra.async.AsyncTaskManager;
 import cafepos.model.infra.logging.FileEventLogger;
 import cafepos.model.service.*;
 import cafepos.model.domain.menu.MenuData;
@@ -30,8 +31,10 @@ public class PosController {
     private final Map<Integer, MainAction> actions;
     private final ActionContext actionContext;
     private final MainAction invalidAction;
+    private final AsyncTaskManager asyncTaskManager;
 
     public PosController() {
+        this.asyncTaskManager = new AsyncTaskManager(2);
         PaymentService paymentService = new DefaultPay();
         ReceiptService receiptService = new ReceiptService(
                 new ContentBuilder(),
@@ -40,13 +43,13 @@ public class PosController {
         LogService logService = new DefaultLogService(new FileEventLogger());
 
         this.actionContext = new ActionContext(
-                menuData,
                 curShoppingCart,
                 inputView,
                 outputView,
                 paymentService,
                 receiptService,
-                logService
+                logService,
+                asyncTaskManager
         );
 
 

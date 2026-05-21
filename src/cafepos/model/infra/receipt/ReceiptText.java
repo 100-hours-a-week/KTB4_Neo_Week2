@@ -12,6 +12,7 @@ public final class ReceiptText {
     public static final String LABEL_ADDRESS = "주소";
     public static final String LABEL_PAID_AT = "결제 시각";
     public static final String LABEL_TOTAL = "총 결제 금액";
+    public static final String LABEL_THREAD = "실행 스레드";
     public static final String CURRENCY = "원";
 
     public static final String THICK_LINE = "===================================";

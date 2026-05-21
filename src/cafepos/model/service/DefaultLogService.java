@@ -14,22 +14,37 @@ public class DefaultLogService implements LogService {
         this.eventLogger = eventLogger;
     }
 
+    private void simulateDelay() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     @Override
     public void logOrder(MenuData menu, int qty) {
-        eventLogger.append(String.format("[%s]  ORDER  %s  %d개", now(), menu.getName(), qty));
+        simulateDelay();
+        eventLogger.append(String.format("[%s]  ORDER  %s  %d개  [%s]", now(), menu.getName(), qty, threadName()));
     }
 
     @Override
     public void logPayment(int totalPrice) {
-        eventLogger.append(String.format("[%s]  PAYMENT  %d원", now(), totalPrice));
+        simulateDelay();
+        eventLogger.append(String.format("[%s]  PAYMENT  %d원  [%s]", now(), totalPrice, threadName()));
     }
 
     @Override
     public void logExit() {
-        eventLogger.append(String.format("[%s]  EXIT", now()));
+        simulateDelay();
+        eventLogger.append(String.format("[%s]  EXIT  [%s]", now(), threadName()));
     }
 
     private String now() {
         return LocalDateTime.now().format(TIME_FORMAT);
+    }
+
+    private String threadName() {
+        return Thread.currentThread().getName();
     }
 }
