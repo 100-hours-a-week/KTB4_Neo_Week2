@@ -21,7 +21,7 @@ public class StoreInfo {
     public String getTelephone() { return telephone; }
     public String getAddress() { return address; }
 
-    public static StoreInfo defaultStore() {
+    public static StoreInfo Store() {
         return new StoreInfo(
                 "KTB4 Fullstack Cafe",
                 "neo.jugn",

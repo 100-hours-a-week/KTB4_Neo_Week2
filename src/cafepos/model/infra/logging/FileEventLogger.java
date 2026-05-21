@@ -1,7 +1,6 @@
 package cafepos.model.infra.logging;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -17,7 +16,6 @@ public class FileEventLogger implements EventLogger {
             Files.writeString(
                     LOG_FILE,
                     line + System.lineSeparator(),
-                    StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND
             );

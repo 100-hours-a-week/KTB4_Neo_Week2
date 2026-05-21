@@ -36,7 +36,7 @@ public class PosController {
         ReceiptService receiptService = new ReceiptService(
                 new ContentBuilder(),
                 new FileWriter(),
-                StoreInfo.defaultStore());
+                StoreInfo.Store());
         LogService logService = new DefaultLogService(new FileEventLogger());
 
         this.actionContext = new ActionContext(
