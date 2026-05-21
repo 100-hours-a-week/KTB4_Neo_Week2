@@ -1,110 +1,199 @@
 @startuml
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
+top to bottom direction
 
-class PosSystem {
-  - menuList : List<MenuItem>
+class PosController {
+  - sc : Scanner
+  - menuData : List<MenuData>
   - curShoppingCart : ShoppingCart
+  - inputView : InputView
+  - outputView : OutputView
+  - actions : Map<Integer, MainAction>
+  - actionContext : ActionContext
+  - invalidAction : MainAction
   - paymentService : PaymentService
+  - logService : LogService
   + main(args : String[]) : void
   - initMenu() : void
   - start() : void
-  - getMenuById(id : int) : MenuItem
-  - readForkCount() : int
-  - readIceOrHot(cupNo : int) : IceOrHot
-  - readIceAmount(cupNo : int) : IceAmount
-  - readMenuId() : int
-  - readQty() : int
-  - readInt() : int
-  - printScreen() : void
+}
+interface MainAction {
+  + action() : void
+}
+class ActionContext {
+  - menuData : List<MenuData>
+  - cart : ShoppingCart
+  - inputView : InputView
+  - outputView : OutputView
+  - paymentService : PaymentService
+  - logService : LogService
+  - receiptService : ReceiptService
+  - running : boolean
+  + menuList() : List<MenuData>
+  + cart() : ShoppingCart
+  + inputView() : InputView
+  + outputView() : OutputView
+  + paymentService() : PaymentService
+  + logService() : LogService
+  + receiptService() : ReceiptService
+  + isRunning() : boolean
+  + stop() : void
+}
+class OrderAction {
+  - ctx : ActionContext
+  + action() : void
+}
+class PayAction {
+  - ctx : ActionContext
+  + action() : void
+}
+class ExitAction {
+  - ctx : ActionContext
+  + action() : void
+}
+class InvalidAction {
+  - ctx : ActionContext
+  + action() : void
 }
 
-class PaymentService {
-  + processPayment(shoppingCart : ShoppingCart) : boolean
+class InputView {
+  + readMainMenu() : int
+  + readMenuId() : int
+  + readQuantity() : int
+  + readForkCount() : int
+  + readIceOrHot(cupNo : int) : IceOrHot
+  + readIceAmount(cupNo : int) : IceAmount
+  + readPaymentConfirm() : boolean
+}
+class OutputView {
+  + printMainScreen(menuList : List<MenuData>, shoppingCart : ShoppingCart) : void
+  + printMainActions() : void
+  + printPaymentCompleted() : void
+  + printPaymentCanceled() : void
 }
 
-class MenuItem {
-  - id : int
-  - name : String
-  - price : int
-  + getId() : int
-  + getName() : String
-  + getPrice() : int
-  + getCategory() : String
-  + printInfo() : void
+interface PaymentService {
+  + canPay(shoppingCart : ShoppingCart) : boolean
+  + calculatePaymentPrice(shoppingCart : ShoppingCart) : int
+  + processPayment(confirm : boolean) : boolean
 }
-class Drink {
-  - isAvailableIce : boolean
-  + isAvailableIce() : boolean
-}
-class Dessert {
-}
-class Coffee {
-}
-class Tea {
-}
-class Cake {
-}
-class Cookie {
+class DefaultPay {
+  + canPay(shoppingCart : ShoppingCart) : boolean
+  + calculatePaymentPrice(shoppingCart : ShoppingCart) : int
+  + processPayment(confirm : boolean) : boolean
 }
 
+interface LogService {
+  + logOrder(menu : MenuData, qty : int) : void
+  + logPayment(totalPrice : int) : void
+  + logExit() : void
+}
+class DefaultLogService {
+  - eventLogger : EventLogger
+  + logOrder(menu : MenuData, qty : int) : void
+  + logPayment(totalPrice : int) : void
+  + logExit() : void
+}
+
+class ReceiptService {
+  - receiptBuilder : ReceiptBuilder
+  - receiptWriter : ReceiptWriter
+  - storeInfo : StoreInfo
+  + createReceipt(items : List<OrderItem>, totalPrice : int) : void
+}
+interface ReceiptBuilder {
+  + build(items : List<OrderItem>, totalPrice : int, paidAt : LocalDateTime, storeInfo : StoreInfo) : String
+}
+class ContentBuilder {
+  + build(items : List<OrderItem>, totalPrice : int, paidAt : LocalDateTime, storeInfo : StoreInfo) : String
+}
+interface ReceiptWriter {
+  + write(content : String, paidAt : LocalDateTime) : void
+}
+class FileWriter {
+  + write(content : String, paidAt : LocalDateTime) : void
+}
+
+interface EventLogger {
+  + append(line : String) : void
+}
+class FileEventLogger {
+  + append(line : String) : void
+}
+
+enum MenuCategory
+enum MenuData
+enum IceOrHot
+enum IceAmount
 class OrderItem {
-  - menuItem : MenuItem
+  - menuData : MenuData
   - quantity : int
   - iceOrHot : IceOrHot
   - iceAmount : IceAmount
   - forkCount : int
-  + getMenuItem() : MenuItem
-  + getQuantity() : int
-  + getIceOrHot() : IceOrHot
-  + getIceAmount() : IceAmount
-  + getForkCount() : int
-  + setIceOrHot(iceOrHot : IceOrHot) : void
-  + setIceAmount(iceAmount : IceAmount) : void
-  + setForkCount(forkCount : int) : void
-  + addQuantity(q : int) : void
   + getItemPrice() : int
   + getOption() : String
 }
-
-enum IceOrHot {
-  HOT
-  ICE
-  - label : String
-  + getLabel() : String
-}
-enum IceAmount {
-  LESS
-  MORE
-  NONE
-  - label : String
-  + getLabel() : String
-}
-
 class ShoppingCart {
   - items : List<OrderItem>
   + addItem(newItem : OrderItem) : void
   + isEmpty() : boolean
   + getTotalPrice() : int
-  ~ isSameLine(a : OrderItem, b : OrderItem) : boolean
-  + printCart() : void
+  + getItems() : List<OrderItem>
   + clear() : void
 }
+class StoreInfo {
+  - storeName : String
+  - ownerName : String
+  - businessNumber : String
+  - telephone : String
+  - address : String
+  + defaultStore() : StoreInfo
+}
+class AsyncTaskManager <<ThreadPool>> {
+  - executorService : ExecutorService
+  + execute(task : Runnable) : void
+  + shutdown() : void
+}
 
-Drink --|> MenuItem
-Dessert --|> MenuItem
-Coffee --|> Drink
-Tea --|> Drink
-Cake --|> Dessert
-Cookie --|> Dessert
+OrderAction ..|> MainAction
+PayAction ..|> MainAction
+ExitAction ..|> MainAction
+InvalidAction ..|> MainAction
+DefaultPay ..|> PaymentService
+DefaultLogService ..|> LogService
+ContentBuilder ..|> ReceiptBuilder
+FileWriter ..|> ReceiptWriter
+FileEventLogger ..|> EventLogger
 
-ShoppingCart --> OrderItem
-OrderItem --> MenuItem
+PosController --> ActionContext
+PosController --> MainAction : actions map
+ActionContext --> InputView
+ActionContext --> OutputView
+ActionContext --> ShoppingCart
+ActionContext --> PaymentService
+ActionContext --> LogService
+ActionContext --> ReceiptService
+
+DefaultLogService --> EventLogger
+ReceiptService --> ReceiptBuilder
+ReceiptService --> ReceiptWriter
+ReceiptService --> StoreInfo
+PayAction ..> AsyncTaskManager : execute(receiptTask)
+PayAction ..> AsyncTaskManager : execute(logTask)
+ExitAction ..> AsyncTaskManager : shutdown()
+AsyncTaskManager ..> ReceiptService : run in worker thread
+AsyncTaskManager ..> LogService : run in worker thread
+
+ShoppingCart "1" o-- "*" OrderItem
+OrderItem --> MenuData
 OrderItem --> IceOrHot
 OrderItem --> IceAmount
+MenuData --> MenuCategory
 
-PosSystem --> ShoppingCart
-PosSystem --> PaymentService
-PosSystem --> MenuItem
-PosSystem --> OrderItem
+note right of AsyncTaskManager
+  ExecutorService / Thread Pool
+  background worker threads
+end note
 @enduml
