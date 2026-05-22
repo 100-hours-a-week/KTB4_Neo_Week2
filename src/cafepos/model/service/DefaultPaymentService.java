@@ -2,7 +2,7 @@ package cafepos.model.service;
 
 import cafepos.model.domain.shoppingcart.ShoppingCart;
 
-public class DefaultPay implements PaymentService {
+public class DefaultPaymentService implements PaymentService {
     @Override
     public boolean canPay(ShoppingCart shoppingCart) {
         return !shoppingCart.isEmpty();

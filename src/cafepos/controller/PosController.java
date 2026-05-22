@@ -35,7 +35,7 @@ public class PosController {
 
     public PosController() {
         this.asyncTaskManager = new AsyncTaskManager(2);
-        PaymentService paymentService = new DefaultPay();
+        PaymentService paymentService = new DefaultPaymentService();
         ReceiptService receiptService = new ReceiptService(
                 new ContentBuilder(),
                 new FileWriter(),
