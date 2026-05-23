@@ -24,10 +24,10 @@ public class StoreInfo {
     public static StoreInfo Store() {
         return new StoreInfo(
                 "KTB4 Fullstack Cafe",
-                "neo.jugn",
+                "neo.jung",
                 "123456789",
                 "02-XXXX-XXXX",
-                "경기도 성남시 분당구 판고역로 166"
+                "경기도 성남시 분당구 판교역로 166"
         );
     }
 }
